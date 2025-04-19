@@ -79,3 +79,39 @@ export const myAction = action({
     });
   },
 });
+
+export const sendMessage = mutation({
+  args: {
+    from: v.string(),
+    to: v.number(),
+    message: v.string(),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.insert("messages", {
+      from: args.from,
+      to: args.to,
+      message: args.message,
+    });
+  },
+});
+
+export const getMessages = query({
+  args: {},
+  handler: async (ctx) => {
+    // Get most recent messages first
+    const messages = await ctx.db.query("messages").order("desc").take(50);
+    // Reverse the list so that it's in a chronological order.
+    return messages.reverse();
+  },
+});
+
+export const currentUser = query({
+  args: {},
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+    if (userId === null) {
+      return null;
+    }
+    return await ctx.db.get(userId);
+  },
+});

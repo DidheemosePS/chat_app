@@ -3,13 +3,13 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { api } from "@/convex/_generated/api";
 import { useMutation, useQuery } from "convex/react";
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 import { IoMdSend } from "react-icons/io";
 
 export default function Chat({ to }: { to: number | undefined }) {
   const messageBoxRef = useRef<HTMLInputElement>(null);
-  const messageList = useQuery(api.chat.getMessages);
-  const sendMessage = useMutation(api.chat.sendMessage);
+  const messageList = useQuery(api.myFunctions.getMessages);
+  const sendMessage = useMutation(api.myFunctions.sendMessage);
 
   if (!to) {
     return (
@@ -20,9 +20,10 @@ export default function Chat({ to }: { to: number | undefined }) {
   }
 
   const handleMessage = async () => {
+    const from: string = useQuery(api.myFunctions.currentUser)?.email ?? "";
     const message = messageBoxRef.current?.value.trim();
     if (!message) return;
-    await sendMessage({ from: "Didhee", to, message });
+    await sendMessage({ from, to, message });
     if (messageBoxRef.current) {
       messageBoxRef.current.value = "";
     }

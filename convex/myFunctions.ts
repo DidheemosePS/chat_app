@@ -201,3 +201,21 @@ export const currentUser = query({
     return await ctx.db.get(userId);
   },
 });
+
+export const update_user_status = mutation({
+  args: {
+    current_user_id: v.id("users"),
+    status: v.optional(v.union(v.literal("online"), v.literal("offline"))),
+  },
+  handler: async (ctx, args) => {
+    const updateData: Record<string, any> = {
+      status: args.status,
+    };
+
+    if (args.status === "offline") {
+      updateData.last_seen = Date.now();
+    }
+
+    await ctx.db.patch(args.current_user_id, updateData);
+  },
+});

@@ -28,14 +28,14 @@ const ChatList = memo(
           <input
             type="text"
             placeholder="Search"
-            className="w-full h-7 rounded-md border border-[#262a2d] px-2 col-span-2 outline-none placeholder:text-sm"
+            className="w-full h-7 rounded-md border border-[#262a2d] px-2 col-span-2 outline-none text-[14.2px] placeholder:text-[14.2px]"
           />
         </div>
 
         {chat_list?.map((chat, i) => (
           <button
             key={chat?._id}
-            className="w-full flex items-center gap-3 p-3 hover:bg-gray-800 transition rounded-md"
+            className="w-full flex items-center gap-3 p-3 hover:bg-[#2c2c2c] transition rounded-md"
             onClick={() => onSelectChat(chat?._id)}
           >
             <div className="w-12 h-12 rounded-full overflow-hidden flex-shrink-0">

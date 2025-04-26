@@ -4,6 +4,7 @@ import { api } from "@/convex/_generated/api";
 import { timeFormat } from "@/utils/timeFormat";
 import { useMutation, useQuery } from "convex/react";
 import React, { useRef } from "react";
+import { HiOutlinePlus } from "react-icons/hi";
 import { IoMdSend } from "react-icons/io";
 
 export default function Chat({ conversation_id }: { conversation_id: any }) {
@@ -53,15 +54,20 @@ export default function Chat({ conversation_id }: { conversation_id: any }) {
             className="w-full h-full object-cover"
           />
         </div>
-        <p className="font-bold text-sm truncate pr-2">
+        <div className="font-bold text-sm truncate pr-2">
           {messageList?.chat_user?.name}
-        </p>
+          <p className="text-[.70rem] font-normal text-[#a4a4a4]">
+            {messageList?.chat_user?.status === "online"
+              ? "Online"
+              : `Last seen at ${messageList?.chat_user?.last_seen ? timeFormat(messageList?.chat_user?.last_seen) : "skip"}`}
+          </p>
+        </div>
       </div>
       <div className="flex flex-col gap-1 p-4 overflow-y-auto h-[calc(100vh-6rem)] break-all">
         {messageList?.messages.map((mes) => (
           <div
             key={mes?._id}
-            className={`${mes?.sender_id === current_user?._id ? "self-end" : "self-start"} w-2/4 max-w-max h-max rounded-lg text-[14.2px] leading-[1.3] px-3 py-[.3rem] bg-[#2c2c2c]`}
+            className={`${mes?.sender_id === current_user?._id ? "self-end bg-green-900" : "self-start"} w-2/4 max-w-max h-max rounded-lg text-[14.2px] leading-[1.3] px-3 py-[.3rem] bg-[#2c2c2c]`}
           >
             {mes?.content}
             {/* {timeFormat(mes?._creationTime)} */}
@@ -69,13 +75,22 @@ export default function Chat({ conversation_id }: { conversation_id: any }) {
         ))}
       </div>
       <div className="flex gap-2 p-2 bg-[#2c2c2c]">
+        <button
+          className="p-4 rounded-full relative hover:bg-[#3f3f3f]"
+          onClick={handleMessage}
+        >
+          <HiOutlinePlus
+            size={20}
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+          />
+        </button>
         <input
           type="text"
           className="w-full rounded-full px-3 field-sizing-content bg-[#3f3f3f] outline-none"
           ref={messageBoxRef}
         />
         <button
-          className="w-10 h-9 rounded-full bg-green-800 relative"
+          className="p-4 rounded-full bg-green-700 relative"
           onClick={handleMessage}
         >
           <IoMdSend

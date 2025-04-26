@@ -3,12 +3,19 @@
 import AnimatedRings from "@/components/animatedRings";
 import Chat from "@/components/chat";
 import ChatList from "@/components/chatList";
+import SideBar from "@/components/sideBar";
 import SignIn from "@/components/signin";
 import SignOut from "@/components/signout";
-import { Authenticated, AuthLoading, Unauthenticated } from "convex/react";
-import { useState, useCallback } from "react";
-import { IoIosChatbubbles } from "react-icons/io";
-import { RiSettings5Line } from "react-icons/ri";
+import { api } from "@/convex/_generated/api";
+import {
+  Authenticated,
+  AuthLoading,
+  Unauthenticated,
+  useConvexAuth,
+  useMutation,
+  useQuery,
+} from "convex/react";
+import { useState, useCallback, useEffect } from "react";
 
 export default function Home() {
   const [conversation_id, setConversation_id] = useState<any>();
@@ -18,6 +25,46 @@ export default function Home() {
     setConversation_id(id);
   }, []);
 
+  const { isAuthenticated } = useConvexAuth();
+  const currentUser = useQuery(api.myFunctions.currentUser);
+  const updateStatus = useMutation(api.myFunctions.update_user_status);
+
+  const [status, setStatus] = useState<"online" | "offline">("offline");
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    const handleUserStatus = async () => {
+      if (currentUser?._id && status !== "online") {
+        await updateStatus({
+          current_user_id: currentUser._id,
+          status: "online",
+        });
+        setStatus("online");
+      }
+    };
+
+    handleUserStatus();
+
+    const handleOffline = async () => {
+      if (currentUser?._id && status !== "offline") {
+        await updateStatus({
+          current_user_id: currentUser._id,
+          status: "offline",
+        });
+        setStatus("offline");
+      }
+    };
+
+    window.addEventListener("beforeunload", handleOffline);
+    window.addEventListener("unload", handleOffline);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleOffline);
+      window.removeEventListener("unload", handleOffline);
+    };
+  }, [isAuthenticated, currentUser, status, updateStatus]);
+
   return (
     <>
       <AuthLoading>
@@ -26,18 +73,11 @@ export default function Home() {
         </div>
       </AuthLoading>
       <div className="grid grid-cols-[60px_minmax(250px,350px)_1fr]">
-        <div className="flex flex-col justify-between p-3 items-center bg-[#2c2c2c]">
-          <button className="w-11 h-11 flex justify-center items-center mt-[1.5rem] rounded-md bg-[#3f3f3f]">
-            <IoIosChatbubbles size={25} className="text-[#bfbfbf]" />
-          </button>
-          <button className="h-max mb-3">
-            <RiSettings5Line size={25} className="text-[#bfbfbf]" />
-          </button>
-        </div>
         <Unauthenticated>
           <SignIn />
         </Unauthenticated>
         <Authenticated>
+          <SideBar />
           <ChatList onSelectChat={handleSelectChat} />
           <Chat conversation_id={conversation_id} />
           <SignOut />

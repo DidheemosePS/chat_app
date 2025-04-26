@@ -5,10 +5,20 @@ import { memo } from "react";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { timeFormat } from "@/utils/timeFormat";
+import { Id } from "@/convex/_generated/dataModel";
 
 // Left panel component (memoized to prevent unnecessary re-renders)
 const ChatList = memo(
-  ({ onSelectChat }: { onSelectChat: (id: any) => void }) => {
+  ({
+    onSelectChat,
+  }: {
+    onSelectChat: (params: {
+      user_id: Id<"users">;
+      conversation_id: Id<"conversations">;
+      name: string;
+      image_url: string;
+    }) => void;
+  }) => {
     const current_user = useQuery(api.myFunctions.currentUser);
 
     const chat_list = useQuery(
@@ -36,7 +46,14 @@ const ChatList = memo(
           <button
             key={chat?._id}
             className="w-full flex items-center gap-3 p-3 hover:bg-[#2c2c2c] transition rounded-md"
-            onClick={() => onSelectChat(chat?._id)}
+            onClick={() =>
+              onSelectChat({
+                user_id: chat?.other_user?._id,
+                conversation_id: chat?._id,
+                name: chat?.other_user?.name!,
+                image_url: chat?.other_user?.image!,
+              })
+            }
           >
             <div className="w-12 h-12 rounded-full overflow-hidden flex-shrink-0">
               <img

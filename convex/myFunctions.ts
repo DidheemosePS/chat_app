@@ -2,6 +2,7 @@ import { v } from "convex/values";
 import { query, mutation, action } from "./_generated/server";
 import { api } from "./_generated/api";
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { use } from "react";
 
 // // Write your Convex functions in any file inside this directory (`convex`).
 // // See https://docs.convex.dev/functions for more.
@@ -130,20 +131,8 @@ export const getMessages = query({
       .order("asc")
       .take(100);
 
-    const chat_user = await ctx.db
-      .get(args.conversation_id)
-      .then((conversation) => {
-        if (!conversation) return null;
-        const otherUserId =
-          conversation.user1_id === args.current_user
-            ? conversation.user2_id
-            : conversation.user1_id;
-        return ctx.db.get(otherUserId);
-      });
-
     return {
       messages,
-      chat_user,
     };
   },
 });
@@ -217,5 +206,15 @@ export const update_user_status = mutation({
     }
 
     await ctx.db.patch(args.current_user_id, updateData);
+  },
+});
+
+export const getUserStatus = query({
+  args: {
+    user_id: v.id("users"),
+  },
+  handler: async (ctx, args) => {
+    const user = await ctx.db.get(args.user_id);
+    return { user_status: user?.status, last_seen: user?.last_seen };
   },
 });

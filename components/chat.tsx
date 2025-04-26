@@ -1,25 +1,45 @@
 "use client";
 
 import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
 import { timeFormat } from "@/utils/timeFormat";
 import { useMutation, useQuery } from "convex/react";
 import React, { useRef } from "react";
 import { HiOutlinePlus } from "react-icons/hi";
 import { IoMdSend } from "react-icons/io";
 
-export default function Chat({ conversation_id }: { conversation_id: any }) {
+interface UserDetails {
+  user_id: Id<"users">;
+  conversation_id: Id<"conversations">;
+  name: string;
+  image_url: string;
+}
+
+export default function Chat({ user_details }: { user_details: UserDetails }) {
   const messageBoxRef = useRef<HTMLInputElement>(null);
   const current_user = useQuery(api.myFunctions.currentUser);
   const messageList = useQuery(
     api.myFunctions.getMessages,
-    conversation_id && current_user?._id
-      ? { conversation_id: conversation_id, current_user: current_user?._id }
+    user_details?.conversation_id && current_user?._id
+      ? {
+          conversation_id: user_details?.conversation_id,
+          current_user: current_user?._id,
+        }
+      : "skip",
+  );
+
+  const user_status = useQuery(
+    api.myFunctions.getUserStatus,
+    user_details?.user_id
+      ? {
+          user_id: user_details?.user_id,
+        }
       : "skip",
   );
 
   const sendMessage = useMutation(api.myFunctions.sendMessage);
 
-  if (!conversation_id) {
+  if (!user_details?.conversation_id) {
     return (
       <p className="flex justify-center items-center px-4 text-sm">
         This is a real time chat application to beat whatsapp :)
@@ -31,7 +51,7 @@ export default function Chat({ conversation_id }: { conversation_id: any }) {
     const message = messageBoxRef.current?.value.trim();
     if (!message || !current_user?._id) return;
     await sendMessage({
-      conversation_id,
+      conversation_id: user_details?.conversation_id,
       sender_id: current_user._id,
       content: message,
       content_type: "text",
@@ -48,18 +68,20 @@ export default function Chat({ conversation_id }: { conversation_id: any }) {
         <div className="w-9 h-9 rounded-full overflow-hidden flex-shrink-0">
           <img
             src={
-              messageList?.chat_user?.image ||
+              user_details?.image_url ||
               "https://avatars.githubusercontent.com/u/124599?v=4"
             }
             className="w-full h-full object-cover"
           />
         </div>
         <div className="font-bold text-sm truncate pr-2">
-          {messageList?.chat_user?.name}
+          {user_details?.name}
           <p className="text-[.70rem] font-normal text-[#a4a4a4]">
-            {messageList?.chat_user?.status === "online"
+            {user_status?.user_status === "online"
               ? "Online"
-              : `Last seen at ${messageList?.chat_user?.last_seen ? timeFormat(messageList?.chat_user?.last_seen) : "skip"}`}
+              : user_status?.last_seen
+                ? `Last seen at ${timeFormat(user_status.last_seen)}`
+                : null}
           </p>
         </div>
       </div>

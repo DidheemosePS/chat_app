@@ -7,6 +7,7 @@ import SideBar from "@/components/sideBar";
 import SignIn from "@/components/signin";
 import SignOut from "@/components/signout";
 import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
 import {
   Authenticated,
   AuthLoading,
@@ -18,11 +19,22 @@ import {
 import { useState, useCallback, useEffect } from "react";
 
 export default function Home() {
-  const [conversation_id, setConversation_id] = useState<any>();
+  interface UserDetails {
+    user_id: Id<"users">;
+    conversation_id: Id<"conversations">;
+    name: string;
+    image_url: string;
+  }
+  const [user_details, setUser_details] = useState<UserDetails>({
+    user_id: "" as Id<"users">,
+    conversation_id: "" as Id<"conversations">,
+    name: "",
+    image_url: "",
+  });
 
   // Memoize function to prevent unnecessary re-renders
-  const handleSelectChat = useCallback((id: number) => {
-    setConversation_id(id);
+  const handleSelectChat = useCallback((user_details: UserDetails) => {
+    setUser_details(user_details);
   }, []);
 
   const { isAuthenticated } = useConvexAuth();
@@ -79,7 +91,7 @@ export default function Home() {
         <Authenticated>
           <SideBar />
           <ChatList onSelectChat={handleSelectChat} />
-          <Chat conversation_id={conversation_id} />
+          <Chat user_details={user_details} />
           <SignOut />
         </Authenticated>
       </div>

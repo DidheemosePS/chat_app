@@ -6,6 +6,7 @@ import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { timeFormat } from "@/utils/timeFormat";
 import { Id } from "@/convex/_generated/dataModel";
+import { Seen } from "./tick_svg";
 
 // Left panel component (memoized to prevent unnecessary re-renders)
 const ChatList = memo(
@@ -73,7 +74,8 @@ const ChatList = memo(
                   {timeFormat(chat?.last_message_at)}
                 </span>
               </div>
-              <div className="flex justify-between items-center w-full">
+              <div className="flex items-center gap-1 w-full">
+                <Seen />
                 <p className="text-sm text-[#676767] truncate pr-2">
                   {chat?.last_message}
                 </p>

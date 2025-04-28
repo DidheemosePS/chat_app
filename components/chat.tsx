@@ -2,11 +2,12 @@
 
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
-import { timeFormat } from "@/utils/timeFormat";
+import { timeFormat, timeOnly } from "@/utils/timeFormat";
 import { useMutation, useQuery } from "convex/react";
 import React, { useRef } from "react";
 import { HiOutlinePlus } from "react-icons/hi";
 import { IoMdSend } from "react-icons/io";
+import { Seen } from "./tick_svg";
 
 interface UserDetails {
   user_id: Id<"users">;
@@ -89,10 +90,15 @@ export default function Chat({ user_details }: { user_details: UserDetails }) {
         {messageList?.messages.map((mes) => (
           <div
             key={mes?._id}
-            className={`${mes?.sender_id === current_user?._id ? "self-end bg-green-900" : "self-start"} w-2/4 max-w-max h-max rounded-lg text-[14.2px] leading-[1.3] px-3 py-[.3rem] bg-[#2c2c2c]`}
+            className={`${mes?.sender_id === current_user?._id ? "self-end bg-green-900" : "self-start"} w-[80%] max-w-max h-max rounded-lg px-2 py-[.3rem] bg-[#2c2c2c] flex gap-3`}
           >
-            {mes?.content}
-            {/* {timeFormat(mes?._creationTime)} */}
+            <p className="text-[14.2px] leading-[1.3]">{mes?.content}</p>
+            <div className="flex items-center self-end">
+              <p className="w-8 text-[.70rem] break-keep text-[#a4a4a4]">
+                {timeOnly(mes?._creationTime)}
+              </p>
+              {mes?.sender_id === current_user?._id ? <Seen /> : null}
+            </div>
           </div>
         ))}
       </div>

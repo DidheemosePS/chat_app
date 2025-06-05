@@ -17,7 +17,8 @@ export default defineSchema({
     isAnonymous: v.optional(v.boolean()),
     status: v.optional(v.union(v.literal("online"), v.literal("offline"))),
     last_seen: v.optional(v.number()),
-  }),
+    tag: v.optional(v.string())
+  }).index("email", ["email"]).index("by_tag", ["tag"]),
 
   conversations: defineTable({
     user1_id: v.id("users"),

@@ -1,11 +1,11 @@
 "use client";
 
-import AnimatedRings from "@/components/animatedRings";
-import Chat from "@/components/chat";
-import ChatList from "@/components/chatList";
-import SideBar from "@/components/sideBar";
-import SignIn from "@/components/signin";
-import SignOut from "@/components/signout";
+import AnimatedRings from "@/app/assets/svgs/animatedRings";
+import Chat from "@/app/components/chat";
+import ChatList from "@/app/components/chatList";
+import SideBar from "@/app/components/sideBar";
+import SignIn from "@/app/components/signin";
+import SignOut from "@/app/components/signout";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import {
@@ -17,6 +17,7 @@ import {
   useQuery,
 } from "convex/react";
 import { useState, useCallback, useEffect } from "react";
+import { generateUniqueTag } from "./utils/generateUniqueTag";
 
 export default function Home() {
   interface UserDetails {
@@ -37,45 +38,45 @@ export default function Home() {
     setUser_details(user_details);
   }, []);
 
-  const { isAuthenticated } = useConvexAuth();
-  const currentUser = useQuery(api.myFunctions.currentUser);
-  const updateStatus = useMutation(api.myFunctions.update_user_status);
+  // const { isAuthenticated } = useConvexAuth();
+  // const currentUser = useQuery(api.myFunctions.currentUser);
+  // const updateStatus = useMutation(api.myFunctions.update_user_status);
 
-  const [status, setStatus] = useState<"online" | "offline">("offline");
+  // const [status, setStatus] = useState<"online" | "offline">("offline");
 
-  useEffect(() => {
-    if (!isAuthenticated) return;
+  // useEffect(() => {
+  //   if (!isAuthenticated) return;
 
-    const handleUserStatus = async () => {
-      if (currentUser?._id && status !== "online") {
-        await updateStatus({
-          current_user_id: currentUser._id,
-          status: "online",
-        });
-        setStatus("online");
-      }
-    };
+  //   const handleUserStatus = async () => {
+  //     if (currentUser?._id && status !== "online") {
+  //       await updateStatus({
+  //         current_user_id: currentUser._id,
+  //         status: "online",
+  //       });
+  //       setStatus("online");
+  //     }
+  //   };
 
-    handleUserStatus();
+  //   handleUserStatus();
 
-    const handleOffline = async () => {
-      if (currentUser?._id && status !== "offline") {
-        await updateStatus({
-          current_user_id: currentUser._id,
-          status: "offline",
-        });
-        setStatus("offline");
-      }
-    };
+  //   const handleOffline = async () => {
+  //     if (currentUser?._id && status !== "offline") {
+  //       await updateStatus({
+  //         current_user_id: currentUser._id,
+  //         status: "offline",
+  //       });
+  //       setStatus("offline");
+  //     }
+  //   };
 
-    window.addEventListener("beforeunload", handleOffline);
-    window.addEventListener("unload", handleOffline);
+  //   window.addEventListener("beforeunload", handleOffline);
+  //   window.addEventListener("unload", handleOffline);
 
-    return () => {
-      window.removeEventListener("beforeunload", handleOffline);
-      window.removeEventListener("unload", handleOffline);
-    };
-  }, [isAuthenticated, currentUser, status, updateStatus]);
+  //   return () => {
+  //     window.removeEventListener("beforeunload", handleOffline);
+  //     window.removeEventListener("unload", handleOffline);
+  //   };
+  // }, [isAuthenticated, currentUser, status, updateStatus]);
 
   return (
     <>

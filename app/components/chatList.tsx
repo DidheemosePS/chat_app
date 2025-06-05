@@ -1,25 +1,17 @@
 "use client";
 
-import { BsPencilSquare } from "react-icons/bs";
 import { memo } from "react";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { timeFormat } from "@/utils/timeFormat";
-import { Id } from "@/convex/_generated/dataModel";
-import { Seen } from "./tick_svg";
+import { timeFormat } from "@/app/utils/timeFormat";
+import { Delivered, Seen, Send } from "../assets/svgs/tick_svg";
+import Edit from "@/app/assets/icons/edit.svg";
+import NewChatSearch from "./newChatSearch";
+import { users } from "../utils/typeSafe";
 
 // Left panel component (memoized to prevent unnecessary re-renders)
 const ChatList = memo(
-  ({
-    onSelectChat,
-  }: {
-    onSelectChat: (params: {
-      user_id: Id<"users">;
-      conversation_id: Id<"conversations">;
-      name: string;
-      image_url: string;
-    }) => void;
-  }) => {
+  ({ onSelectChat }: { onSelectChat: (params: users) => void }) => {
     const current_user = useQuery(api.myFunctions.currentUser);
 
     const chat_list = useQuery(
@@ -31,18 +23,16 @@ const ChatList = memo(
       <div className="h-screen px-4 overflow-scroll border-r border-[#262a2d]">
         <div className="w-full grid grid-cols-2 grid-rows-2 align-content-center gap-y-2 py-2 sticky top-0 z-10">
           <p className="self-center font-bold text-lg">Chats</p>
-          <div className="flex gap-4 justify-end items-center">
-            <button className="h-max">
-              <BsPencilSquare size={17} className="text-[#bfbfbf]" />
-            </button>
-          </div>
-          <input
+          <button className="flex gap-4 justify-end items-center">
+            <Edit className="w-[20px] h-[20px]" />
+          </button>
+          {/* <input
             type="text"
             placeholder="Search"
             className="w-full h-7 rounded-md border border-[#262a2d] px-2 col-span-2 outline-none text-[14.2px] placeholder:text-[14.2px]"
-          />
+          /> */}
+          <NewChatSearch />
         </div>
-
         {chat_list?.map((chat, i) => (
           <button
             key={chat?._id}
@@ -74,11 +64,21 @@ const ChatList = memo(
                   {timeFormat(chat?.last_message_at)}
                 </span>
               </div>
-              <div className="flex items-center gap-1 w-full">
-                <Seen />
-                <p className="text-sm text-[#676767] truncate pr-2">
+              <div className="flex items-center w-full">
+                {chat?.other_user?._id !== current_user?._id &&
+                  (chat?.last_message_status === "send" ? (
+                    <Send />
+                  ) : chat?.last_message_status === "delivered" ? (
+                    <Delivered />
+                  ) : (
+                    <Seen />
+                  ))}
+                <p className="text-[14.2px] text-[#676767] truncate pr-2">
                   {chat?.last_message}
                 </p>
+                <div className="w-4 h-4 text-xs rounded-full text-[#202020] ml-auto bg-green-600 flex justify-center items-center">
+                  {chat?.unreadCounts}
+                </div>
               </div>
             </div>
           </button>

@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
-import ConvexClientProvider from "@/app/components/ConvexClientProvider";
+import { ConvexClientProvider } from "@/app/components/provider";
+import { JotaiClientProvider } from "./components/provider";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -21,7 +21,9 @@ export default function RootLayout({
     <ConvexAuthNextjsServerProvider>
       <html lang="en">
         <body className="bg-[#202020] text-[#d0d0d0]">
-          <ConvexClientProvider>{children}</ConvexClientProvider>
+          <JotaiClientProvider>
+            <ConvexClientProvider>{children}</ConvexClientProvider>
+          </JotaiClientProvider>
         </body>
       </html>
     </ConvexAuthNextjsServerProvider>

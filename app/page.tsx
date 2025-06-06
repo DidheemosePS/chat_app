@@ -18,15 +18,10 @@ import {
 } from "convex/react";
 import { useState, useCallback, useEffect } from "react";
 import { generateUniqueTag } from "./utils/generateUniqueTag";
+import { Users } from "./utils/typeSafe";
 
 export default function Home() {
-  interface UserDetails {
-    user_id: Id<"users">;
-    conversation_id: Id<"conversations">;
-    name: string;
-    image_url: string;
-  }
-  const [user_details, setUser_details] = useState<UserDetails>({
+  const [user_details, setUser_details] = useState<Users>({
     user_id: "" as Id<"users">,
     conversation_id: "" as Id<"conversations">,
     name: "",
@@ -34,7 +29,7 @@ export default function Home() {
   });
 
   // Memoize function to prevent unnecessary re-renders
-  const handleSelectChat = useCallback((user_details: UserDetails) => {
+  const handleSelectChat = useCallback((user_details: Users) => {
     setUser_details(user_details);
   }, []);
 

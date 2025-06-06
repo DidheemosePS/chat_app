@@ -7,11 +7,11 @@ import { timeFormat } from "@/app/utils/timeFormat";
 import { Delivered, Seen, Send } from "../assets/svgs/tick_svg";
 import Edit from "@/app/assets/icons/edit.svg";
 import NewChatSearch from "./newChatSearch";
-import { users } from "../utils/typeSafe";
+import { Users } from "../utils/typeSafe";
 
 // Left panel component (memoized to prevent unnecessary re-renders)
 const ChatList = memo(
-  ({ onSelectChat }: { onSelectChat: (params: users) => void }) => {
+  ({ onSelectChat }: { onSelectChat: (params: Users) => void }) => {
     const current_user = useQuery(api.myFunctions.currentUser);
 
     const chat_list = useQuery(
@@ -29,7 +29,7 @@ const ChatList = memo(
           {/* <input
             type="text"
             placeholder="Search"
-            className="w-full h-7 rounded-md border border-[#262a2d] px-2 col-span-2 outline-none text-[14.2px] placeholder:text-[14.2px]"
+            className="w-full h-7 rounded-md border border-[#262a2d] px-2 col-span-2 outline-none text-[14.2px] placeholder:text-[13px]"
           /> */}
           <NewChatSearch />
         </div>

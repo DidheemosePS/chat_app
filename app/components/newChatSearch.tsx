@@ -26,7 +26,7 @@ export default function NewChatSearch() {
       maxLength={6}
       onKeyDown={(e) => handleKeyDown(e)}
       onChange={(e) => handleInputChange(e)}
-      className="w-full h-7 rounded-md border border-[#262a2d] px-2 col-span-2 outline-none text-[14.2px] placeholder:text-[14.2px]"
+      className="w-full h-7 rounded-md border border-[#262a2d] px-2 col-span-2 outline-none text-[14.2px] placeholder:text-[12px]"
     />
   );
 }

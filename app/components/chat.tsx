@@ -1,21 +1,20 @@
 "use client";
 
 import { api } from "@/convex/_generated/api";
-import { Id } from "@/convex/_generated/dataModel";
 import { timeOnly } from "@/app/utils/timeFormat";
 import { useMutation, useQuery } from "convex/react";
 import { useRef, useState } from "react";
-import { HiOutlinePlus } from "react-icons/hi";
-import { IoMdSend } from "react-icons/io";
 import { Delivered, Seen, Send } from "../assets/svgs/tick_svg";
+import Plus from "@/app/assets/icons/plus.svg";
+import Sent from "@/app/assets/icons/send.svg";
 import Folder from "@/app/assets/icons/folder.svg";
 import Photos from "@/app/assets/icons/photos.svg";
 import Contacts from "@/app/assets/icons/contacts.svg";
 import Poll from "@/app/assets/icons/poll.svg";
 import Calendar from "@/app/assets/icons/calendar.svg";
-import { users } from "../utils/typeSafe";
+import { Users } from "../utils/typeSafe";
 
-export default function Chat({ user_details }: { user_details: users }) {
+export default function Chat({ user_details }: { user_details: Users }) {
   const [isOptionsOpen, setIsOptionsOpen] = useState(false);
   const messageBoxRef = useRef<HTMLInputElement>(null);
   const current_user = useQuery(api.myFunctions.currentUser);
@@ -40,7 +39,7 @@ export default function Chat({ user_details }: { user_details: users }) {
 
   const sendMessage = useMutation(api.myFunctions.sendMessage);
 
-  if (!user_details?.conversation_id) {
+  if (user_details?.conversation_id) {
     return (
       <p className="flex justify-center items-center px-4 text-sm">
         This is a real time chat application to beat whatsapp :)
@@ -143,13 +142,10 @@ export default function Chat({ user_details }: { user_details: users }) {
       </div>
       <div className="flex gap-2 p-2 bg-[#2c2c2c]">
         <button
-          className={`p-4 rounded-full relative hover:bg-[#3f3f3f] ${isOptionsOpen ? "rotate-45 transition ease-in-out" : "rotate-90 transition ease-in-out"}`}
+          className={`w-max h-max p-1 rounded-full hover:bg-[#3f3f3f] ${isOptionsOpen ? "rotate-45 transition ease-in-out" : "rotate-90 transition ease-in-out"}`}
           onClick={handleOptions}
         >
-          <HiOutlinePlus
-            size={20}
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-          />
+          <Plus />
         </button>
         <input
           type="text"
@@ -157,13 +153,10 @@ export default function Chat({ user_details }: { user_details: users }) {
           ref={messageBoxRef}
         />
         <button
-          className="p-4 rounded-full bg-green-700 relative"
+          className="w-max h-max p-[.31rem] rounded-full bg-green-700"
           onClick={handleMessage}
         >
-          <IoMdSend
-            size={20}
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-          />
+          <Sent className="w-[19px] h-[19px]" />
         </button>
       </div>
     </div>

@@ -26,6 +26,7 @@ export default function Chat({
   const messageBoxRef = useRef<HTMLInputElement>(null);
   const current_user = useQuery(api.myFunctions.currentUser);
 
+  // Query the messages
   const messageList = useQuery(
     api.myFunctions.getMessages,
     user_details?.conversation_id && current_user?._id
@@ -47,6 +48,7 @@ export default function Chat({
 
   const sendMessage = useMutation(api.myFunctions.sendMessage);
 
+  // function to send messages
   const handleMessage = async () => {
     const message = messageBoxRef.current?.value.trim();
     if (!message || !current_user?._id) return;
@@ -65,10 +67,12 @@ export default function Chat({
     }
   };
 
+  // Function to handle chat options like files, photos & videos etc.
   const handleOptions = async () => {
     setIsOptionsOpen(!isOptionsOpen);
   };
 
+  // Common styles repeating
   const optionsStyle: string =
     "flex gap-4 px-2 py-1.5 items-center rounded-sm hover:bg-[#545454] transition ease-in-out cursor-pointer";
   const iconStyle = "w-[23px] h-[23px]";
@@ -84,6 +88,7 @@ export default function Chat({
     { icon: Calendar, text: "Calendar" },
   ];
 
+  // Return message if there is no user details
   if (!user_details.user_id) {
     return (
       <p className="flex justify-center items-center px-4 text-sm">

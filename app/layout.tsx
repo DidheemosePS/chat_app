@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
-import { ConvexClientProvider } from "@/app/components/provider";
-import { JotaiClientProvider } from "./components/provider";
+import { ConvexClientProvider } from "@/app/components/providers";
+import { JotaiClientProvider } from "./components/providers";
 
 export const metadata: Metadata = {
   title: "Create Next App",

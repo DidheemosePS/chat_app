@@ -4,6 +4,7 @@ import { api } from "@/convex/_generated/api";
 import { useAuthActions } from "@convex-dev/auth/react";
 import { useMutation, useQuery } from "convex/react";
 
+// Signout component and functions
 export default function SignOut() {
   const current_user = useQuery(api.myFunctions.currentUser);
   const { signOut } = useAuthActions();

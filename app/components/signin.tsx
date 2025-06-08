@@ -1,5 +1,6 @@
 import { useAuthActions } from "@convex-dev/auth/react";
 
+// Signin component and their functions
 export default function SignIn() {
   const { signIn } = useAuthActions();
   return (

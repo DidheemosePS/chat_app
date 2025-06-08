@@ -7,20 +7,19 @@ import Edit from "@/app/assets/icons/edit.svg";
 import NewChatSearch from "./newChatSearch";
 import { Users } from "../utils/typeSafe";
 import { ReUseableButtons } from "./reUseableButtons";
-import { useAtomValue } from "jotai";
-import { searchResultsAtom } from "../utils/atoms";
-import { Id } from "@/convex/_generated/dataModel";
 
 // Left panel component (memoized to prevent unnecessary re-renders)
 const ChatList = memo(
   ({ onSelectChat }: { onSelectChat: (params: Users) => void }) => {
     const current_user = useQuery(api.myFunctions.currentUser);
 
+    // Query to get the chat history
     const chat_list = useQuery(
       api.myFunctions.getChatList,
       current_user ? { user_id: current_user?._id } : "skip",
     );
 
+    // Function to handle search box like open close
     const [openSearch, setOpenSearch] = useState(false);
     function newChatButton() {
       setOpenSearch((prev) => !prev);

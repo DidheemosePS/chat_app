@@ -1,12 +1,8 @@
 "use client";
 
 import { api } from "@/convex/_generated/api";
-import { useAction, useMutation } from "convex/react";
-import { useAtom, useSetAtom } from "jotai";
 import React, { useRef, useState } from "react";
 import { Users } from "../utils/typeSafe";
-import { searchResultsAtom } from "../utils/atoms";
-import { Id } from "@/convex/_generated/dataModel";
 import { useConvex } from "convex/react";
 import Close from "@/app/assets/icons/close.svg";
 
@@ -17,22 +13,32 @@ export default function NewChatSearch({
 }) {
   const convex = useConvex();
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const [searchResults, setSearchResults] = useState<any>();
+  const [searchResults, setSearchResults] = useState<Users>();
   const [searchInputActive, setSearchInputActive] = useState(false);
+
+  // Function to keep a eye on search input field
   async function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
     if (e.target.value.length === 0) {
       setSearchInputActive(false);
       return;
-    } else {
-      setSearchInputActive(true);
     }
+    setSearchInputActive(true);
     if (e.target.value.length === 6) {
       const newChatUser = await convex.query(api.myFunctions.getUserTag, {
         tag: e.target.value,
       });
-      setSearchResults(newChatUser);
+
+      if (newChatUser)
+        setSearchResults({
+          user_id: newChatUser.user_id!,
+          name: newChatUser.name!,
+          image_url: newChatUser.image_url!,
+          tag: newChatUser.tag!,
+        });
     }
   }
+
+  // Function to restrict to entering any others alphanumeric values
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
     const key = e.key;
     const navKeys = ["@", "Backspace", "Tab", "ArrowLeft", "ArrowRight"];
@@ -72,9 +78,9 @@ export default function NewChatSearch({
           className="w-full flex items-center justify-start gap-3 px-2 py-1.5 bg-[#3f3f3f] transition rounded-md"
           onClick={() =>
             onSelectChat({
-              user_id: searchResults?._id,
+              user_id: searchResults?.user_id,
               name: searchResults?.name!,
-              image_url: searchResults?.image!,
+              image_url: searchResults?.image_url!,
               tag: searchResults?.tag!,
             })
           }
@@ -82,7 +88,7 @@ export default function NewChatSearch({
           <div className="w-9 h-9 rounded-full overflow-hidden flex-shrink-0">
             <img
               src={
-                searchResults?.image ||
+                searchResults?.image_url ||
                 (searchResults &&
                   "https://avatars.githubusercontent.com/u/124599?v=4")
               }

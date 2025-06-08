@@ -1,6 +1,5 @@
 import { v } from "convex/values";
-import { query, mutation, action, internalQuery } from "./_generated/server";
-import { api, internal } from "./_generated/api";
+import { query, mutation } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
 
 export const sendMessage = mutation({
@@ -212,6 +211,12 @@ export const getUserTag = query({
       .query("users")
       .withIndex("by_tag", (q) => q.eq("tag", args.tag))
       .first();
-    return user;
+    if (!user) return null;
+    return {
+      user_id: user._id,
+      name: user.name,
+      image_url: user.image,
+      tag: user.tag,
+    };
   },
 });

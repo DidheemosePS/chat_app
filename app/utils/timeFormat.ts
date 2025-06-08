@@ -1,3 +1,4 @@
+// Function to convert timestamps to DD/MM/YYYY
 export function timeFormat(timestampMs: number) {
   const date = new Date(timestampMs);
   const now = new Date();
@@ -42,6 +43,7 @@ export function timeFormat(timestampMs: number) {
   }
 }
 
+// Function to convert timestamp to 21:30
 export function timeOnly(timestamp: number | string) {
   if (!timestamp) return "";
 

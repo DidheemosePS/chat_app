@@ -5,6 +5,7 @@ import { ReUseableButtons } from "./reUseableButtons";
 import SignOut from "./signout";
 import { useAuthActions } from "@convex-dev/auth/react";
 
+// Slidebar or navigation component
 export default function SideBar() {
   const { signOut } = useAuthActions();
   return (

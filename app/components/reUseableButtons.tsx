@@ -2,6 +2,7 @@
 
 import { FC, SVGProps } from "react";
 
+// Reuseable buttons are defined here
 export function ReUseableButtons({
   Icon,
   style,

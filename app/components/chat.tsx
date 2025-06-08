@@ -13,11 +13,19 @@ import Contacts from "@/app/assets/icons/contacts.svg";
 import Poll from "@/app/assets/icons/poll.svg";
 import Calendar from "@/app/assets/icons/calendar.svg";
 import { Users } from "../utils/typeSafe";
+import { Id } from "@/convex/_generated/dataModel";
 
-export default function Chat({ user_details }: { user_details: Users }) {
+export default function Chat({
+  user_details,
+}: {
+  user_details: Omit<Users, "conversation_id"> & {
+    conversation_id?: Id<"conversations">;
+  };
+}) {
   const [isOptionsOpen, setIsOptionsOpen] = useState(false);
   const messageBoxRef = useRef<HTMLInputElement>(null);
   const current_user = useQuery(api.myFunctions.currentUser);
+
   const messageList = useQuery(
     api.myFunctions.getMessages,
     user_details?.conversation_id && current_user?._id
@@ -28,31 +36,26 @@ export default function Chat({ user_details }: { user_details: Users }) {
       : "skip",
   );
 
-  const user_status = useQuery(
-    api.myFunctions.getUserStatus,
-    user_details?.user_id
-      ? {
-          user_id: user_details?.user_id,
-        }
-      : "skip",
-  );
+  // const user_status = useQuery(
+  //   api.myFunctions.getUserStatus,
+  //   user_details?.user_id
+  //     ? {
+  //         user_id: user_details?.user_id,
+  //       }
+  //     : "skip",
+  // );
 
   const sendMessage = useMutation(api.myFunctions.sendMessage);
-
-  if (user_details?.conversation_id) {
-    return (
-      <p className="flex justify-center items-center px-4 text-sm">
-        This is a real time chat application to beat whatsapp :)
-      </p>
-    );
-  }
 
   const handleMessage = async () => {
     const message = messageBoxRef.current?.value.trim();
     if (!message || !current_user?._id) return;
     await sendMessage({
-      conversation_id: user_details?.conversation_id,
+      ...(user_details?.conversation_id && {
+        conversation_id: user_details.conversation_id,
+      }),
       sender_id: current_user._id,
+      receiver_id: user_details?.user_id,
       content: message,
       content_type: "text",
       status: "send",
@@ -68,10 +71,30 @@ export default function Chat({ user_details }: { user_details: Users }) {
 
   const optionsStyle: string =
     "flex gap-4 px-2 py-1.5 items-center rounded-sm hover:bg-[#545454] transition ease-in-out cursor-pointer";
+  const iconStyle = "w-[23px] h-[23px]";
+  const textStyle = "text-sm";
+  const optionsButtons = [
+    {
+      icon: Folder,
+      text: "File",
+    },
+    { icon: Photos, text: "Photos & Videos" },
+    { icon: Contacts, text: "Contacts" },
+    { icon: Poll, text: "Poll" },
+    { icon: Calendar, text: "Calendar" },
+  ];
+
+  if (!user_details.user_id) {
+    return (
+      <p className="flex justify-center items-center px-4 text-sm">
+        This is a real time chat application to beat whatsapp :)
+      </p>
+    );
+  }
 
   return (
     <div className="grid grid-rows-[3rem_1fr_3rem] bg-[#1e1e1e]">
-      <div className="flex items-center gap-3 p-5 border-b border-[#262a2d] bg-[#2c2c2c]">
+      <div className="flex items-center gap-3 px-4 border-b border-[#262a2d] bg-[#2c2c2c]">
         <div className="w-9 h-9 rounded-full overflow-hidden flex-shrink-0">
           <img
             src={
@@ -81,15 +104,11 @@ export default function Chat({ user_details }: { user_details: Users }) {
             className="w-full h-full object-cover"
           />
         </div>
-        <div className="font-bold text-sm truncate pr-2">
-          {user_details?.name}
-          <p className="text-[.70rem] font-normal text-[#a4a4a4]">
-            {user_status?.user_status === "online"
-              ? "Online"
-              : user_status?.last_seen
-                ? `Last seen at`
-                : null}
+        <div>
+          <p className="font-bold text-sm truncate pr-2">
+            {user_details?.name}
           </p>
+          <p className="text-[12px]">{user_details?.tag}</p>
         </div>
       </div>
       <div className="flex flex-col gap-1 p-4 overflow-y-auto h-[calc(100vh-6rem)] break-all relative">
@@ -117,26 +136,14 @@ export default function Chat({ user_details }: { user_details: Users }) {
           ))}
         {isOptionsOpen ? (
           <div className="w-max h-max p-2 absolute bottom-0 left-2 z-10 bg-[#3f3f3f] rounded-md flex flex-col">
-            <div className={optionsStyle}>
-              <Folder className="w-[23px] h-[23px]" />
-              <p className="text-sm">File</p>
-            </div>
-            <div className={optionsStyle}>
-              <Photos className="w-[23px] h-[23px]" />
-              <p className="text-sm">Photos & Videos</p>
-            </div>
-            <div className={optionsStyle}>
-              <Contacts className="w-[23px] h-[23px]" />
-              <p className="text-sm">Contact</p>
-            </div>
-            <div className={optionsStyle}>
-              <Poll className="w-[23px] h-[23px]" />
-              <p className="text-sm">Poll</p>
-            </div>
-            <div className={optionsStyle}>
-              <Calendar className="w-[23px] h-[23px]" />
-              <p className="text-sm">Event</p>
-            </div>
+            {isOptionsOpen
+              ? optionsButtons?.map((button, index) => (
+                  <button className={optionsStyle} key={index}>
+                    <button.icon className={iconStyle} />
+                    <p className={textStyle}>{button.text}</p>
+                  </button>
+                ))
+              : null}
           </div>
         ) : null}
       </div>
@@ -150,6 +157,9 @@ export default function Chat({ user_details }: { user_details: Users }) {
         <input
           type="text"
           className="w-full rounded-full px-3 field-sizing-content bg-[#3f3f3f] outline-none"
+          onKeyDown={(e) => {
+            if (e.key === "Enter") handleMessage();
+          }}
           ref={messageBoxRef}
         />
         <button

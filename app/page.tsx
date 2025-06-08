@@ -23,15 +23,22 @@ import { Users } from "./utils/typeSafe";
 export default function Home() {
   const [user_details, setUser_details] = useState<Users>({
     user_id: "" as Id<"users">,
-    conversation_id: "" as Id<"conversations">,
     name: "",
     image_url: "",
+    tag: "",
   });
 
   // Memoize function to prevent unnecessary re-renders
-  const handleSelectChat = useCallback((user_details: Users) => {
-    setUser_details(user_details);
-  }, []);
+  const handleSelectChat = useCallback(
+    (
+      user_details: Omit<Users, "conversation_id"> & {
+        conversation_id?: Id<"conversations">;
+      },
+    ) => {
+      setUser_details(user_details);
+    },
+    [],
+  );
 
   // const { isAuthenticated } = useConvexAuth();
   // const currentUser = useQuery(api.myFunctions.currentUser);
@@ -80,7 +87,7 @@ export default function Home() {
           <AnimatedRings />
         </div>
       </AuthLoading>
-      <div className="grid grid-cols-[60px_minmax(250px,350px)_1fr]">
+      <div className="grid grid-cols-[60px_minmax(250px,350px)_1fr] fixed w-full h-screen">
         <Unauthenticated>
           <SignIn />
         </Unauthenticated>
